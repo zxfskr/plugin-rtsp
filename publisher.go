@@ -67,15 +67,19 @@ func (p *RTSPPublisher) SetTracks() error {
 			case *format.MPEG4Audio:
 				at := p.AudioTrack
 				if at == nil {
-					at := p.CreateAudioTrack(codec.CodecID_AAC, byte(f.PayloadType()), uint32(f.Config.SampleRate)).(*AAC)
+					conf := f.Config
+					if f.LATM {
+						conf = f.StreamMuxConfig.Programs[0].Layers[0].AudioSpecificConfig
+					}
+					at := p.CreateAudioTrack(codec.CodecID_AAC, byte(f.PayloadType()), uint32(conf.SampleRate)).(*AAC)
 					at.IndexDeltaLength = f.IndexDeltaLength
 					at.IndexLength = f.IndexLength
 					at.SizeLength = f.SizeLength
-					if f.Config.Type == mpeg4audio.ObjectTypeAACLC {
+					if conf.Type == mpeg4audio.ObjectTypeAACLC {
 						at.Mode = 1
 					}
-					at.Channels = uint8(f.Config.ChannelCount)
-					asc, _ := f.Config.Marshal()
+					at.Channels = uint8(conf.ChannelCount)
+					asc, _ := conf.Marshal()
 					// 复用AVCC写入逻辑，解析出AAC的配置信息
 					at.WriteSequenceHead(append([]byte{0xAF, 0x00}, asc...))
 				}
