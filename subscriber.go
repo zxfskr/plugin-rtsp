@@ -78,9 +78,9 @@ func (s *RTSPSubscriber) OnEvent(event any) {
 						SampleRate:   int(v.SampleRate),
 						ChannelCount: int(v.Channels),
 					},
-					SizeLength:       v.SizeLength,
-					IndexLength:      v.IndexLength,
-					IndexDeltaLength: v.IndexDeltaLength,
+					SizeLength:       v.AACDecoder.SizeLength,
+					IndexLength:      v.AACDecoder.IndexLength,
+					IndexDeltaLength: v.AACDecoder.IndexDeltaLength,
 				}},
 			}
 		case codec.CodecID_PCMA:

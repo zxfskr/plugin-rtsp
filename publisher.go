@@ -68,13 +68,14 @@ func (p *RTSPPublisher) SetTracks() error {
 				at := p.AudioTrack
 				if at == nil {
 					conf := f.Config
-					if f.LATM {
+					if f.LATM && f.StreamMuxConfig != nil && len(f.StreamMuxConfig.Programs) > 0 && len(f.StreamMuxConfig.Programs[0].Layers) > 0 {
 						conf = f.StreamMuxConfig.Programs[0].Layers[0].AudioSpecificConfig
 					}
 					at := p.CreateAudioTrack(codec.CodecID_AAC, byte(f.PayloadType()), uint32(conf.SampleRate)).(*AAC)
-					at.IndexDeltaLength = f.IndexDeltaLength
-					at.IndexLength = f.IndexLength
-					at.SizeLength = f.SizeLength
+					at.AACDecoder.LATM = f.LATM
+					at.AACDecoder.IndexDeltaLength = f.IndexDeltaLength
+					at.AACDecoder.IndexLength = f.IndexLength
+					at.AACDecoder.SizeLength = f.SizeLength
 					if conf.Type == mpeg4audio.ObjectTypeAACLC {
 						at.Mode = 1
 					}
