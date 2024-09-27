@@ -72,6 +72,7 @@ func (p *RTSPPublisher) SetTracks() error {
 						conf = f.StreamMuxConfig.Programs[0].Layers[0].AudioSpecificConfig
 					}
 					at := p.CreateAudioTrack(codec.CodecID_AAC, byte(f.PayloadType()), uint32(conf.SampleRate)).(*AAC)
+					at.AACFormat = f
 					at.AACDecoder.LATM = f.LATM
 					at.AACDecoder.IndexDeltaLength = f.IndexDeltaLength
 					at.AACDecoder.IndexLength = f.IndexLength

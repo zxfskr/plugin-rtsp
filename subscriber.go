@@ -69,9 +69,9 @@ func (s *RTSPSubscriber) OnEvent(event any) {
 		}
 		switch v.CodecID {
 		case codec.CodecID_AAC:
-			s.audioTrack = &description.Media{
-				Type: description.MediaTypeAudio,
-				Formats: []format.Format{&format.MPEG4Audio{
+			f := v.AACFormat
+			if f == nil {
+				f = &format.MPEG4Audio{
 					PayloadTyp: v.PayloadType,
 					Config: &mpeg4audio.Config{
 						Type:         mpeg4audio.ObjectTypeAACLC,
@@ -81,7 +81,11 @@ func (s *RTSPSubscriber) OnEvent(event any) {
 					SizeLength:       v.AACDecoder.SizeLength,
 					IndexLength:      v.AACDecoder.IndexLength,
 					IndexDeltaLength: v.AACDecoder.IndexDeltaLength,
-				}},
+				}
+			}
+			s.audioTrack = &description.Media{
+				Type:    description.MediaTypeAudio,
+				Formats: []format.Format{f},
 			}
 		case codec.CodecID_PCMA:
 			s.audioTrack = &description.Media{
